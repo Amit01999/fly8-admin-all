@@ -31,6 +31,16 @@ router.post('/onboarding', authMiddleware, roleMiddleware('student'), async (req
 
     await student.save();
 
+    // Log audit
+    await logAudit(
+      req.user.userId,
+      'student_onboarded',
+      'student',
+      studentId,
+      { interestedCountries, selectedServices },
+      req
+    );
+
     // Notify super admin about new student
     const superAdmins = await User.find({ role: 'super_admin' });
     for (const admin of superAdmins) {
@@ -43,6 +53,9 @@ router.post('/onboarding', authMiddleware, roleMiddleware('student'), async (req
         metadata: { studentId }
       });
       await notification.save();
+      
+      // Real-time notification
+      emitToUser(admin.userId, 'new_notification', notification);
     }
 
     res.status(201).json({
