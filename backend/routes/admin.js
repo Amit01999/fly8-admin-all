@@ -7,6 +7,8 @@ const Student = require('../models/Student');
 const ServiceApplication = require('../models/ServiceApplication');
 const Notification = require('../models/Notification');
 const Commission = require('../models/Commission');
+const { logAudit } = require('../utils/auditLogger');
+const { emitToUser } = require('../socket/socketManager');
 
 // Get dashboard metrics
 router.get('/metrics', authMiddleware, roleMiddleware('super_admin'), async (req, res) => {
