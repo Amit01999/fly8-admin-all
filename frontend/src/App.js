@@ -1,53 +1,89 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Auth Pages
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+// Onboarding
+import Onboarding from "./components/onboarding/Onboarding";
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+// Dashboards
+import StudentDashboard from "./components/dashboard/StudentDashboard";
+import SuperAdminDashboard from "./components/admin/SuperAdminDashboard";
+import CounselorDashboard from "./components/counselor/CounselorDashboard";
+import AgentDashboard from "./components/agent/AgentDashboard";
 
 function App() {
   return (
-    <div className="App">
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
+          {/* Onboarding */}
+          <Route 
+            path="/onboarding" 
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <Onboarding />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Student Dashboard */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <StudentDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Super Admin Dashboard */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <SuperAdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Counselor Dashboard */}
+          <Route 
+            path="/counselor" 
+            element={
+              <ProtectedRoute allowedRoles={['counselor']}>
+                <CounselorDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Agent Dashboard */}
+          <Route 
+            path="/agent" 
+            element={
+              <ProtectedRoute allowedRoles={['agent']}>
+                <AgentDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Default Redirect */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        
+        <Toaster position="top-right" />
       </BrowserRouter>
-    </div>
+    </AuthProvider>
   );
 }
 
