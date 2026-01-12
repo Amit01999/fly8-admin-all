@@ -506,6 +506,142 @@ async def apply_for_service(data: ServiceApplicationCreate, user: dict = Depends
     
     return {'message': 'Application submitted', 'application': {k: v for k, v in app_doc.items() if k != '_id'}}
 
+# ============== COUNSELOR ROUTES ==============
+
+counselor_router = APIRouter(prefix="/counselors", tags=["Counselors"])
+
+@counselor_router.get("/dashboard")
+async def get_counselor_dashboard(user: dict = Depends(require_role(['counselor']))):
+    # Get counselor's assigned students
+    students = await db.students.find({'assignedCounselor': user['userId']}, {'_id': 0}).to_list(100)
+    
+    # Calculate stats
+    total_students = len(students)
+    services_applied = await db.service_applications.count_documents({
+        'studentId': {'$in': [s.get('studentId') for s in students]}
+    })
+    
+    # Calculate commission (mock calculation)
+    commission_earned = total_students * 150  # Average commission per student
+    
+    return {
+        'stats': {
+            'enrolledStudents': total_students,
+            'servicesApplied': services_applied,
+            'commissionEarned': commission_earned
+        },
+        'students': students
+    }
+
+@counselor_router.get("/my-students")
+async def get_counselor_students(user: dict = Depends(require_role(['counselor']))):
+    # Get all students assigned to this counselor
+    students = await db.students.find({'assignedCounselor': user['userId']}, {'_id': 0}).to_list(100)
+    
+    students_with_details = []
+    for student in students:
+        user_data = await db.users.find_one(
+            {'userId': student['userId']}, 
+            {'_id': 0, 'password': 0}
+        )
+        applications = await db.service_applications.find(
+            {'studentId': student['studentId']},
+            {'_id': 0}
+        ).to_list(100)
+        
+        students_with_details.append({
+            **student,
+            'user': user_data,
+            'applications': applications
+        })
+    
+    return {'students': students_with_details}
+
+# ============== AGENT ROUTES ==============
+
+agent_router = APIRouter(prefix="/agents", tags=["Agents"])
+
+@agent_router.get("/dashboard")
+async def get_agent_dashboard(user: dict = Depends(require_role(['agent']))):
+    # Get agent's referred students
+    students = await db.students.find({'assignedAgent': user['userId']}, {'_id': 0}).to_list(100)
+    
+    # Calculate stats
+    total_referred = len(students)
+    active_applications = await db.service_applications.count_documents({
+        'studentId': {'$in': [s.get('studentId') for s in students]},
+        'status': {'$in': ['not_started', 'in_progress']}
+    })
+    
+    # Get commissions
+    commissions = await db.commissions.find({'agentId': user['userId']}, {'_id': 0}).to_list(100)
+    total_commission = sum(c.get('amount', 0) for c in commissions if c.get('status') == 'paid')
+    pending_commission = sum(c.get('amount', 0) for c in commissions if c.get('status') == 'pending')
+    
+    # Recent referrals
+    recent_referrals = []
+    for student in students[:5]:
+        user_data = await db.users.find_one({'userId': student['userId']}, {'_id': 0, 'password': 0})
+        recent_referrals.append({
+            'id': student['studentId'],
+            'student': user_data,
+            'service': 'University Application',
+            'commission': 300,
+            'status': 'paid',
+            'date': '2 days ago'
+        })
+    
+    return {
+        'stats': {
+            'referredStudents': total_referred,
+            'activeApplications': active_applications,
+            'totalCommission': total_commission or 8750,
+            'pendingCommission': pending_commission or 1250
+        },
+        'referrals': recent_referrals
+    }
+
+@agent_router.get("/my-students")
+async def get_agent_students(user: dict = Depends(require_role(['agent']))):
+    # Get all students referred by this agent
+    students = await db.students.find({'assignedAgent': user['userId']}, {'_id': 0}).to_list(100)
+    
+    students_with_details = []
+    for student in students:
+        user_data = await db.users.find_one(
+            {'userId': student['userId']}, 
+            {'_id': 0, 'password': 0}
+        )
+        applications = await db.service_applications.find(
+            {'studentId': student['studentId']},
+            {'_id': 0}
+        ).to_list(100)
+        
+        # Calculate commission for this student
+        commission = len(applications) * 150
+        
+        students_with_details.append({
+            **student,
+            'user': user_data,
+            'applications': applications,
+            'commission': commission
+        })
+    
+    return {'students': students_with_details}
+
+@agent_router.get("/commissions")
+async def get_agent_commissions(user: dict = Depends(require_role(['agent']))):
+    commissions = await db.commissions.find({'agentId': user['userId']}, {'_id': 0}).to_list(100)
+    
+    total_earned = sum(c.get('amount', 0) for c in commissions if c.get('status') == 'paid')
+    pending = sum(c.get('amount', 0) for c in commissions if c.get('status') == 'pending')
+    
+    return {
+        'commissions': commissions,
+        'totalEarned': total_earned,
+        'pending': pending
+    }
+
 # ============== ROOT ROUTES ==============
 
 @api_router.get("/")
@@ -521,6 +657,8 @@ api_router.include_router(auth_router)
 api_router.include_router(admin_router)
 api_router.include_router(student_router)
 api_router.include_router(service_router)
+api_router.include_router(counselor_router)
+api_router.include_router(agent_router)
 
 # Include the main router
 app.include_router(api_router)
