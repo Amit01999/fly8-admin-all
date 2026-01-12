@@ -18,6 +18,12 @@ import SuperAdminDashboard from "./components/admin/SuperAdminDashboard";
 import CounselorDashboard from "./components/counselor/CounselorDashboard";
 import AgentDashboard from "./components/agent/AgentDashboard";
 
+// Student Pages
+import ExploreServices from "./pages/student/ExploreServices";
+import TrackServices from "./pages/student/TrackServices";
+import MyProfile from "./pages/student/MyProfile";
+import AccountSettings from "./pages/student/AccountSettings";
+
 function App() {
   return (
     <AuthProvider>
@@ -44,6 +50,43 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['student']}>
                   <StudentDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Student Pages */}
+            <Route 
+              path="/dashboard/services" 
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <ExploreServices />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/dashboard/track" 
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <TrackServices />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/dashboard/profile" 
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <MyProfile />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/dashboard/settings" 
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <AccountSettings />
                 </ProtectedRoute>
               } 
             />
