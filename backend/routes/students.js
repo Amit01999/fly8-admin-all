@@ -110,7 +110,17 @@ router.post('/apply-services', authMiddleware, roleMiddleware('student'), async 
         await application.save();
         applications.push(application);
 
-        // Notify super admin
+        // Log audit
+        await logAudit(
+          req.user.userId,
+          'service_applied',
+          'application',
+          application.applicationId,
+          { serviceId },
+          req
+        );
+
+        // Notify super admin with real-time update
         const superAdmins = await User.find({ role: 'super_admin' });
         for (const admin of superAdmins) {
           const notification = new Notification({
@@ -122,6 +132,14 @@ router.post('/apply-services', authMiddleware, roleMiddleware('student'), async 
             metadata: { studentId: student.studentId, serviceId }
           });
           await notification.save();
+          
+          // Real-time notification
+          emitToUser(admin.userId, 'new_notification', notification);
+          emitToAdmins('service_application', {
+            student: { firstName: req.user.firstName, lastName: req.user.lastName },
+            serviceId,
+            timestamp: new Date()
+          });
         }
       }
     }
