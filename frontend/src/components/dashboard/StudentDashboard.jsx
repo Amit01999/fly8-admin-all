@@ -191,6 +191,19 @@ export default function StudentDashboard() {
                     const isCompleted = status === 'completed';
                     const isActive = status === 'in_progress';
                     const isPending = status === 'not_started';
+                    
+                    // Map icon names to components
+                    const iconMap = {
+                      'Target': Target,
+                      'FileText': FileText,
+                      'GraduationCap': GraduationCap,
+                      'Plane': Plane,
+                      'Ticket': FileText, // Using FileText as fallback
+                      'Home': Home,
+                      'DollarSign': DollarSign,
+                      'Briefcase': Briefcase
+                    };
+                    const IconComponent = iconMap[service.icon] || Target;
 
                     return (
                       <motion.div
@@ -200,7 +213,7 @@ export default function StudentDashboard() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.6 + index * 0.1 }}
                       >
-                        <div className={`relative w-12 h-12 rounded-full flex items-center justify-center text-xl mb-2 border-2 transition-all ${
+                        <div className={`relative w-12 h-12 rounded-full flex items-center justify-center mb-2 border-2 transition-all ${
                           isCompleted 
                             ? 'bg-green-500 border-green-400 shadow-lg shadow-green-500/50' 
                             : isActive 
@@ -210,7 +223,7 @@ export default function StudentDashboard() {
                           {isCompleted ? (
                             <CheckCircle className=\"w-6 h-6 text-white\" />
                           ) : (
-                            <span>{service.emoji}</span>
+                            <IconComponent className=\"w-5 h-5 text-white\" />
                           )}
                           {isActive && (
                             <span className=\"absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-ping\" />
