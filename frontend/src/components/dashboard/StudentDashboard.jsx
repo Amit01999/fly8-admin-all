@@ -261,6 +261,18 @@ export default function StudentDashboard() {
                 {applications.filter(a => a.status === 'in_progress' || a.status === 'not_started').slice(0, 3).map((app, index) => {
                   const service = SERVICES.find(s => s.id === app.serviceId);
                   const progress = app.status === 'in_progress' ? 50 : 10;
+                  
+                  const iconMap = {
+                    'Target': Target,
+                    'FileText': FileText,
+                    'GraduationCap': GraduationCap,
+                    'Plane': Plane,
+                    'Ticket': FileText,
+                    'Home': Home,
+                    'DollarSign': DollarSign,
+                    'Briefcase': Briefcase
+                  };
+                  const ServiceIcon = iconMap[service?.icon] || Target;
 
                   return (
                     <motion.div
@@ -273,8 +285,8 @@ export default function StudentDashboard() {
                     >
                       <div className=\"flex items-center justify-between mb-3\">
                         <div className=\"flex items-center gap-3\">
-                          <div className={`w-10 h-10 bg-gradient-to-br ${service?.color || 'from-gray-400 to-gray-500'} rounded-lg flex items-center justify-center text-xl`}>
-                            {service?.emoji || '📋'}
+                          <div className={`w-10 h-10 bg-gradient-to-br ${service?.color || 'from-gray-400 to-gray-500'} rounded-lg flex items-center justify-center`}>
+                            <ServiceIcon className=\"w-5 h-5 text-white\" />
                           </div>
                           <div>
                             <h4 className=\"font-semibold text-gray-900\">{service?.name || app.serviceId}</h4>
