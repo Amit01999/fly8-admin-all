@@ -17,7 +17,12 @@ import {
   Sparkles,
   Target,
   Bell,
-  Upload
+  Upload,
+  GraduationCap,
+  Plane,
+  Home,
+  DollarSign,
+  Briefcase
 } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'sonner';
