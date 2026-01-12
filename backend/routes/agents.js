@@ -58,11 +58,52 @@ router.get('/commissions', authMiddleware, roleMiddleware('agent'), async (req, 
         totalPending,
         totalApproved,
         totalPaid,
-        lifetimeEarnings: totalPaid
+        lifetimeEarnings: totalPaid,
+        totalCommissions: commissions.length
       }
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch commissions' });
+  }
+});
+
+// Request commission payout
+router.post('/commissions/:commissionId/request-payout', authMiddleware, roleMiddleware('agent'), async (req, res) => {
+  try {
+    const { commissionId } = req.params;
+    
+    const commission = await Commission.findOne({ 
+      commissionId,
+      agentId: req.user.userId 
+    });
+
+    if (!commission) {
+      return res.status(404).json({ error: 'Commission not found' });
+    }
+
+    if (commission.status !== 'approved') {
+      return res.status(400).json({ error: 'Commission must be approved before payout' });
+    }
+
+    // In production, integrate with Stripe Connect or bank transfer
+    commission.status = 'paid';
+    commission.paidAt = new Date();
+    await commission.save();
+
+    await logAudit(
+      req.user.userId,
+      'commission_paid',
+      'commission',
+      commissionId,
+      { amount: commission.amount },
+      req
+    );
+
+    emitToUser(req.user.userId, 'commission_paid', commission);
+
+    res.json({ message: 'Payout processed', commission });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to process payout' });
   }
 });
 
