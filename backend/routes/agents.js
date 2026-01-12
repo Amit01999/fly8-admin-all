@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const { v4: uuidv4 } = require('uuid');
 const { authMiddleware, roleMiddleware } = require('../middleware/auth');
 const Student = require('../models/Student');
 const ServiceApplication = require('../models/ServiceApplication');
 const Commission = require('../models/Commission');
 const User = require('../models/User');
+const { logAudit } = require('../utils/auditLogger');
+const { emitToUser } = require('../socket/socketManager');
 
 // Get assigned students (for agents)
 router.get('/my-students', authMiddleware, roleMiddleware('agent'), async (req, res) => {
