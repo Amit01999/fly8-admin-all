@@ -24,6 +24,14 @@ import TrackServices from "./pages/student/TrackServices";
 import MyProfile from "./pages/student/MyProfile";
 import AccountSettings from "./pages/student/AccountSettings";
 
+// Admin Pages
+import ManageStudents from "./pages/admin/ManageStudents";
+import ManageCounselors from "./pages/admin/ManageCounselors";
+import ManageAgents from "./pages/admin/ManageAgents";
+import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminAssignments from "./pages/admin/AdminAssignments";
+import AdminSettings from "./pages/admin/AdminSettings";
+
 function App() {
   return (
     <AuthProvider>
@@ -97,6 +105,61 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['super_admin']}>
                   <SuperAdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Admin Pages */}
+            <Route 
+              path="/admin/students" 
+              element={
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <ManageStudents />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/admin/counselors" 
+              element={
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <ManageCounselors />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/admin/agents" 
+              element={
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <ManageAgents />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/admin/notifications" 
+              element={
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <AdminNotifications />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/admin/assignments" 
+              element={
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <AdminAssignments />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/admin/settings" 
+              element={
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <AdminSettings />
                 </ProtectedRoute>
               } 
             />
