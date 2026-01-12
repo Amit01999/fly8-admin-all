@@ -12,25 +12,45 @@ import Signup from "./components/auth/Signup";
 // Onboarding
 import Onboarding from "./components/onboarding/Onboarding";
 
-// Dashboards
+// Student Dashboard & Pages
 import StudentDashboard from "./components/dashboard/StudentDashboard";
-import SuperAdminDashboard from "./components/admin/SuperAdminDashboard";
-import CounselorDashboard from "./components/counselor/CounselorDashboard";
-import AgentDashboard from "./components/agent/AgentDashboard";
-
-// Student Pages
 import ExploreServices from "./pages/student/ExploreServices";
 import TrackServices from "./pages/student/TrackServices";
 import MyProfile from "./pages/student/MyProfile";
 import AccountSettings from "./pages/student/AccountSettings";
 
-// Admin Pages
+// Super Admin Dashboard & Pages
+import SuperAdminDashboard from "./components/admin/SuperAdminDashboard";
 import ManageStudents from "./pages/admin/ManageStudents";
 import ManageCounselors from "./pages/admin/ManageCounselors";
 import ManageAgents from "./pages/admin/ManageAgents";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import AdminAssignments from "./pages/admin/AdminAssignments";
 import AdminSettings from "./pages/admin/AdminSettings";
+
+// Counselor Dashboard & Pages
+import CounselorDashboardMain from "./pages/counselor/CounselorDashboardMain";
+import CounselorMyStudents from "./pages/counselor/CounselorMyStudents";
+import CounselorApplications from "./pages/counselor/CounselorApplications";
+import CounselorExploreProducts from "./pages/counselor/CounselorExploreProducts";
+import CounselorLeads from "./pages/counselor/CounselorLeads";
+import CounselorEarnings from "./pages/counselor/CounselorEarnings";
+import CounselorVASServices from "./pages/counselor/CounselorVASServices";
+import CounselorAdmissions from "./pages/counselor/CounselorAdmissions";
+import CounselorCourseFinder from "./pages/counselor/CounselorCourseFinder";
+import CounselorTeam from "./pages/counselor/CounselorTeam";
+
+// Agent Dashboard & Pages
+import AgentDashboardMain from "./pages/agent/AgentDashboardMain";
+import AgentMyStudents from "./pages/agent/AgentMyStudents";
+import AgentApplications from "./pages/agent/AgentApplications";
+import AgentExploreProducts from "./pages/agent/AgentExploreProducts";
+import AgentLeads from "./pages/agent/AgentLeads";
+import AgentEarnings from "./pages/agent/AgentEarnings";
+import AgentVASServices from "./pages/agent/AgentVASServices";
+import AgentAdmissions from "./pages/agent/AgentAdmissions";
+import AgentCourseFinder from "./pages/agent/AgentCourseFinder";
+import AgentCommission from "./pages/agent/AgentCommission";
 
 function App() {
   return (
@@ -52,7 +72,7 @@ function App() {
               } 
             />
             
-            {/* Student Dashboard */}
+            {/* ==================== STUDENT ROUTES ==================== */}
             <Route 
               path="/dashboard" 
               element={
@@ -61,8 +81,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
-            {/* Student Pages */}
             <Route 
               path="/dashboard/services" 
               element={
@@ -71,7 +89,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/dashboard/track" 
               element={
@@ -80,7 +97,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/dashboard/profile" 
               element={
@@ -89,7 +105,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/dashboard/settings" 
               element={
@@ -99,7 +114,7 @@ function App() {
               } 
             />
             
-            {/* Super Admin Dashboard */}
+            {/* ==================== SUPER ADMIN ROUTES ==================== */}
             <Route 
               path="/admin" 
               element={
@@ -108,8 +123,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
-            {/* Admin Pages */}
             <Route 
               path="/admin/students" 
               element={
@@ -118,7 +131,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/admin/counselors" 
               element={
@@ -127,7 +139,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/admin/agents" 
               element={
@@ -136,7 +147,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/admin/notifications" 
               element={
@@ -145,7 +155,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/admin/assignments" 
               element={
@@ -154,7 +163,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
             <Route 
               path="/admin/settings" 
               element={
@@ -164,22 +172,166 @@ function App() {
               } 
             />
             
-            {/* Counselor Dashboard */}
+            {/* ==================== COUNSELOR ROUTES ==================== */}
             <Route 
               path="/counselor" 
               element={
                 <ProtectedRoute allowedRoles={['counselor']}>
-                  <CounselorDashboard />
+                  <CounselorDashboardMain />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/explore" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorExploreProducts />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/students" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorMyStudents />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/leads" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorLeads />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/vas" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorVASServices />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/admissions" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorAdmissions />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/applications" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorApplications />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/courses" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorCourseFinder />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/team" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorTeam />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/counselor/earnings" 
+              element={
+                <ProtectedRoute allowedRoles={['counselor']}>
+                  <CounselorEarnings />
                 </ProtectedRoute>
               } 
             />
             
-            {/* Agent Dashboard */}
+            {/* ==================== AGENT ROUTES ==================== */}
             <Route 
               path="/agent" 
               element={
                 <ProtectedRoute allowedRoles={['agent']}>
-                  <AgentDashboard />
+                  <AgentDashboardMain />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/explore" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentExploreProducts />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/students" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentMyStudents />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/leads" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentLeads />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/vas" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentVASServices />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/admissions" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentAdmissions />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/applications" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentApplications />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/courses" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentCourseFinder />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/commission" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentCommission />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/earnings" 
+              element={
+                <ProtectedRoute allowedRoles={['agent']}>
+                  <AgentEarnings />
                 </ProtectedRoute>
               } 
             />
