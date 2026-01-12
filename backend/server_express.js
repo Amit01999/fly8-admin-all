@@ -3,12 +3,18 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const http = require('http');
+const { initSocket } = require('./socket/socketManager');
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 8001;
+
+// Initialize Socket.io
+initSocket(server);
 
 // Middleware
 app.use(cors({
@@ -38,10 +44,17 @@ const agentRoutes = require('./routes/agents');
 const adminRoutes = require('./routes/admin');
 const notificationRoutes = require('./routes/notifications');
 const universityRoutes = require('./routes/universities');
+const paymentRoutes = require('./routes/payments');
+const auditRoutes = require('./routes/audit');
 
 // Root Route
 app.get('/', (req, res) => {
-  res.json({ message: 'Fly8 API Server Running', status: 'active' });
+  res.json({ 
+    message: 'Fly8 API Server Running', 
+    status: 'active',
+    version: '1.0.0',
+    features: ['Authentication', 'Real-time Notifications', 'Payment Processing', 'Audit Logging']
+  });
 });
 
 // API Routes
@@ -53,6 +66,17 @@ app.use('/api/agents', agentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/universities', universityRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/audit', auditRoutes);
+
+// Health Check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
 
 // Error Handler
 app.use((err, req, res, next) => {
@@ -64,8 +88,9 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Fly8 Server running on port ${PORT}`);
+  console.log(`🔌 Socket.io enabled for real-time notifications`);
 });
 
-module.exports = app;
+module.exports = { app, server };
