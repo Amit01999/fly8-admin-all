@@ -23,14 +23,14 @@ import api from '../../utils/api';
 import { toast } from 'sonner';
 
 const SERVICES = [
-  { id: 'service-1', name: 'Profile Assessment', icon: '🎯', color: 'from-blue-500 to-blue-600', emoji: '🎯' },
-  { id: 'service-2', name: 'Pre-application', icon: '📄', color: 'from-purple-500 to-purple-600', emoji: '📄' },
-  { id: 'service-3', name: 'Apply University', icon: '🎓', color: 'from-pink-500 to-pink-600', emoji: '🎓' },
-  { id: 'service-4', name: 'Visa Support', icon: '✈️', color: 'from-orange-500 to-orange-600', emoji: '✈️' },
-  { id: 'service-5', name: 'Travel Support', icon: '🎫', color: 'from-amber-500 to-amber-600', emoji: '🎫' },
-  { id: 'service-6', name: 'Accommodation', icon: '🏠', color: 'from-green-500 to-green-600', emoji: '🏠' },
-  { id: 'service-7', name: 'Education Loan', icon: '💰', color: 'from-emerald-500 to-emerald-600', emoji: '💰' },
-  { id: 'service-8', name: 'Find Jobs', icon: '💼', color: 'from-teal-500 to-teal-600', emoji: '💼' }
+  { id: 'service-1', name: 'Profile Assessment', icon: 'Target', color: 'from-blue-500 to-blue-600' },
+  { id: 'service-2', name: 'Pre-application', icon: 'FileText', color: 'from-purple-500 to-purple-600' },
+  { id: 'service-3', name: 'Apply University', icon: 'GraduationCap', color: 'from-pink-500 to-pink-600' },
+  { id: 'service-4', name: 'Visa Support', icon: 'Plane', color: 'from-orange-500 to-orange-600' },
+  { id: 'service-5', name: 'Travel Support', icon: 'Ticket', color: 'from-amber-500 to-amber-600' },
+  { id: 'service-6', name: 'Accommodation', icon: 'Home', color: 'from-green-500 to-green-600' },
+  { id: 'service-7', name: 'Education Loan', icon: 'DollarSign', color: 'from-emerald-500 to-emerald-600' },
+  { id: 'service-8', name: 'Find Jobs', icon: 'Briefcase', color: 'from-teal-500 to-teal-600' }
 ];
 
 export default function StudentDashboard() {
