@@ -18,8 +18,10 @@ initSocket(server);
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : '*',
-  credentials: true
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', ...( process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['*'])],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
