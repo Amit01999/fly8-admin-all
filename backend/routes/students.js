@@ -6,6 +6,8 @@ const Student = require('../models/Student');
 const ServiceApplication = require('../models/ServiceApplication');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
+const { logAudit } = require('../utils/auditLogger');
+const { emitToAdmins, emitToUser } = require('../socket/socketManager');
 
 // Complete student onboarding
 router.post('/onboarding', authMiddleware, roleMiddleware('student'), async (req, res) => {
