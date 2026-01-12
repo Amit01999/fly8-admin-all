@@ -95,6 +95,124 @@ router.put('/students/:studentId/assign-counselor', authMiddleware, roleMiddlewa
   } catch (error) {
     res.status(500).json({ error: 'Failed to assign counselor' });
   }
+
+// Get all commissions
+router.get('/commissions', authMiddleware, roleMiddleware('super_admin'), async (req, res) => {
+  try {
+    const commissions = await Commission.find().sort({ createdAt: -1 });
+    
+    const pendingCommissions = commissions.filter(c => c.status === 'pending');
+    const approvedCommissions = commissions.filter(c => c.status === 'approved');
+    const paidCommissions = commissions.filter(c => c.status === 'paid');
+
+    res.json({
+      commissions,
+      summary: {
+        total: commissions.length,
+        pending: pendingCommissions.length,
+        approved: approvedCommissions.length,
+        paid: paidCommissions.length,
+        totalPending: pendingCommissions.reduce((sum, c) => sum + c.amount, 0),
+        totalPaid: paidCommissions.reduce((sum, c) => sum + c.amount, 0)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch commissions' });
+  }
+});
+
+// Approve commission
+router.put('/commissions/:commissionId/approve', authMiddleware, roleMiddleware('super_admin'), async (req, res) => {
+  try {
+    const { commissionId } = req.params;
+    
+    const commission = await Commission.findOne({ commissionId });
+    if (!commission) {
+      return res.status(404).json({ error: 'Commission not found' });
+    }
+
+    commission.status = 'approved';
+    await commission.save();
+
+    await logAudit(
+      req.user.userId,
+      'commission_approved',
+      'commission',
+      commissionId,
+      { amount: commission.amount, agentId: commission.agentId },
+      req
+    );
+
+    // Notify agent
+    const notification = new Notification({
+      notificationId: uuidv4(),
+      recipientId: commission.agentId,
+      type: 'commission',
+      title: 'Commission Approved',
+      message: `Your commission of $${commission.amount} has been approved`,
+      metadata: { commissionId }
+    });
+    await notification.save();
+    emitToUser(commission.agentId, 'new_notification', notification);
+
+    res.json({ message: 'Commission approved', commission });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to approve commission' });
+  }
+});
+
+// Process commission payout (Admin initiates Stripe payout)
+router.post('/commissions/:commissionId/payout', authMiddleware, roleMiddleware('super_admin'), async (req, res) => {
+  try {
+    const { commissionId } = req.params;
+    
+    const commission = await Commission.findOne({ commissionId });
+    if (!commission) {
+      return res.status(404).json({ error: 'Commission not found' });
+    }
+
+    if (commission.status !== 'approved') {
+      return res.status(400).json({ error: 'Commission must be approved first' });
+    }
+
+    // TODO: Integrate with Stripe Connect for actual payout
+    // const payout = await stripe.payouts.create({
+    //   amount: Math.round(commission.amount * 100),
+    //   currency: 'usd',
+    //   destination: agent.stripeAccountId
+    // });
+
+    commission.status = 'paid';
+    commission.paidAt = new Date();
+    await commission.save();
+
+    await logAudit(
+      req.user.userId,
+      'commission_paid',
+      'commission',
+      commissionId,
+      { amount: commission.amount, agentId: commission.agentId },
+      req
+    );
+
+    // Notify agent
+    const notification = new Notification({
+      notificationId: uuidv4(),
+      recipientId: commission.agentId,
+      type: 'commission',
+      title: 'Commission Paid',
+      message: `Your commission of $${commission.amount} has been paid`,
+      metadata: { commissionId }
+    });
+    await notification.save();
+    emitToUser(commission.agentId, 'new_notification', notification);
+
+    res.json({ message: 'Commission payout processed', commission });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to process payout' });
+  }
+});
+
 });
 
 // Assign agent to student
